@@ -7,6 +7,7 @@ description: "A single post that demonstrates TOC, headings, lists, code, tables
 ShowToc: true
 TocOpen: true
 ShowReadingTime: true
+math: true
 ---
 
 This is a **demo post** to verify your Hugo + PaperMod setup works end-to-end:
