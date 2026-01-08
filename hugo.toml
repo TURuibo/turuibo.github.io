@@ -13,7 +13,7 @@ ShowCodeCopyButtons = true
 
 [params.homeInfoParams]
 Title = "Hi, I’m Ruibo"
-Content = "I write blogs on AI for science, multi-modal foundation models, causality"
+Content = "I write blogs on AI for science, multi-modal foundation models, causality."
 
 [[menu.main]]
 name = "Posts"
