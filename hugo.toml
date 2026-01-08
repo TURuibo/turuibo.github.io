@@ -1,0 +1,31 @@
+baseURL = "http://localhost:1313/"
+languageCode = "en-us"
+title = "turuibo"
+theme = "PaperMod"
+
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+
+[params]
+ShowReadingTime = true
+ShowToc = true
+ShowCodeCopyButtons = true
+
+[params.homeInfoParams]
+Title = "Hi, I’m Ruibo"
+Content = "I write blogs on AI for science, multi-modal foundation models, causality"
+
+[[menu.main]]
+name = "Posts"
+url = "/posts/"
+weight = 10
+
+[[menu.main]]
+name = "Search"
+url = "/search/"
+weight = 20
+
+[[menu.main]]
+name = "Tags"
+url = "/tags/"
+weight = 30
