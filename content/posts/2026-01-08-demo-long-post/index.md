@@ -1,7 +1,7 @@
 ---
 title: "Demo Long Post: Everything Enabled"
 date: 2026-01-08
-draft: false
+draft: true
 tags: ["demo", "papermod", "markdown"]
 description: "A single post that demonstrates TOC, headings, lists, code, tables, images, callouts, details, links, and (optional) math/mermaid."
 ShowToc: true
