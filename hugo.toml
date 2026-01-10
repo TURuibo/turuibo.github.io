@@ -1,6 +1,6 @@
 baseURL = "http://localhost:1313/"
 languageCode = "en-us"
-title = "turuibo"
+title = "Ruibo's Blog"
 theme = "PaperMod"
 
 [outputs]
@@ -13,7 +13,7 @@ ShowCodeCopyButtons = true
 
 [params.homeInfoParams]
 Title = "Hi, I’m Ruibo"
-Content = "I write blogs on AI for science, multi-modal foundation models, causality."
+Content = "My learning notes. Let's learn together!"
 
 [[menu.main]]
 name = "Posts"
