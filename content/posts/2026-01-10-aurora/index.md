@@ -74,7 +74,7 @@ Originally, Swin Transformer was proposed for dealing with the computational iss
 * Perceiver IO ([Jaegle et al., 2022](https://openreview.net/forum?id=fILj7WpI-g))
 * ClimaX ([Nguyen et al., 2023](https://arxiv.org/abs/2301.10343))
 * GraphCast ([Lam et al., 2023](https://www.science.org/doi/10.1126/science.adi2336))
-
+* NeuralGCM ([Yuval et al., 2025](https://www.science.org/doi/10.1126/sciadv.adv6891))
 
 
 ## References
@@ -91,3 +91,4 @@ Originally, Swin Transformer was proposed for dealing with the computational iss
 * Ravi, N., et al. (2024). [SAM 2: Segment Anything in Images and Videos](https://arxiv.org/abs/2408.00714). *arXiv*.
 * Bodnár, C., et al. (2025). [A Foundation Model for the Earth System](https://doi.org/10.1038/s41586-025-09005-y). *Nature*.
 * Carion, N., et al. (2025). [SAM 3: Segment Anything with Concepts](https://arxiv.org/abs/2511.16719). *arXiv*.
+* Yuval, J., et al. (2025). [Neural general circulation models for modeling precipitation](https://www.science.org/doi/10.1126/sciadv.adv6891). *Science Advances*.
