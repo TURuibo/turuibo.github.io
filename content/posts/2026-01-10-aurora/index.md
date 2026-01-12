@@ -22,8 +22,6 @@ According to the paper, traditional earth system forecasting models are computat
 
 ## Model
 
-### Deep Neural network Modules
-
 Each module deserves a separate blog, so only high-level descriptions are introduced here.
 
 [![Diagram of Aurora, a flexible 3D foundation model of the atmosphere: pretrained on heterogeneous datasets (ERA5, CMIP6, GFS) and then fine-tuned with LoRA for operational forecasting at different resolutions; the model uses 3D Perceiver encoders/decoders around a 3D Swin Transformer U-Net to predict atmospheric fields from time T to T+1.](figures/image.png)](https://www.microsoft.com/en-us/research/blog/introducing-aurora-the-first-large-scale-foundation-model-of-the-atmosphere/)
