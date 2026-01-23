@@ -92,23 +92,11 @@ MLM and NSP are used for pre-training; however, NSP is shown to be less effectiv
 **Finetuning.** 
 Downstream task heads are added on top of the last layer and all parameters are finetuned. LoRA was not developed at that time and the parameter number is still feasible to be finetuned, like less than 1 billion.
 
-<p align="center">
-  <img src="figures/BERT_masked_language_modelling_task.png"
-       alt="BERT Pre-training and Fine-tuning"
-       width="60%">
-</p>
-<p align="center">
-  <em>Figure 1: Masked language modelling tasks. Source: <a href="https://en.wikipedia.org/wiki/BERT_(language_model)">Wikipedia</a>.</em>
-</p>
+![BERT Pre-training and Fine-tuning](figures/BERT_masked_language_modelling_task.png)
+*Figure 1: Masked language modelling tasks. Source: [Wikipedia](https://en.wikipedia.org/wiki/BERT_(language_model)).*
 
-<p align="center">
-  <img src="figures/BERT_next_sequence_prediction_task.png"
-       alt="BERT Input Representation"
-       width="60%">
-</p>
-<p align="center">
-  <em>Figure 2: Next sentence prediction task. Source: <a href="https://en.wikipedia.org/wiki/BERT_(language_model)">Wikipedia</a>.</em>
-</p>
+![BERT Input Representation](figures/BERT_next_sequence_prediction_task.png)
+*Figure 2: Next sentence prediction task. Source: [Wikipedia](https://en.wikipedia.org/wiki/BERT_(language_model)).*
 
 ## Discussion
 
