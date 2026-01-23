@@ -98,6 +98,25 @@ Downstream task heads are added on top of the last layer and all parameters are 
 ![BERT Input Representation](figures/BERT_next_sequence_prediction_task.png)
 *Figure 2: Next sentence prediction task. Source: [Wikipedia](https://en.wikipedia.org/wiki/BERT_(language_model)).*
 
+## Training recipe
+
+> **Note:** The batch size of 256 is relatively small compared to modern standards (e.g., RoBERTa used 8k). The NSP task was later found to be less critical or even detrimental in subsequent studies like RoBERTa, which removed it and trained on more data for longer.
+
+| Pretraining aspect         |                                                                                                     |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Objective                  | **Masked Language Model (MLM)** + **Next Sentence Prediction (NSP)**                                                   |
+| Steps                      | **1,000,000 steps**                                                                                                    |
+| Hardware                   | **4 Cloud TPUs** (Base) or **16 Cloud TPUs** (Large)                                                                   |
+| Wall-clock time            | **4 days**                                                                                                             |
+| Batch size                 | **256 sequences** (256 × 512 tokens = 128,000 tokens/batch)                                                            |
+| Data used                  | **BooksCorpus** (800M words) and **English Wikipedia** (2,500M words)                                                  |
+| Optimizer                  | **Adam** (β1=0.9, β2=0.999, ε=1e-6)                                                                                    |
+| Learning rate schedule     | **Linear warm-up** over **10k steps**, then **linear decay**; Peak LR **1e-4**                                         |
+| Weight decay               | **0.01** (L2)                                                                                                          |
+| Regularization             | **Dropout** with probability **0.1**                                                                                   |
+| Activation                 | **GELU**                                                                                                               |
+
+
 ## Discussion
 
 Masked value prediction and removing the constraints on attention layers make the model assumptions hold for other domains, like image, tabular data, time-series data, as well. So regarding general self-supervised learning with finetuning for downstream tasks, it will be more reasonable to start from BERT structure than GPT structure.
