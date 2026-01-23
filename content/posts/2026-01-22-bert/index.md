@@ -9,25 +9,26 @@ TocOpen: true
 ShowReadingTime: true
 math: true
 ---
-BERT takes the encoder of Transformer ([Vaswani et al., 2017](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)) pre-trained with masked language model task and next sentence prediction. It can be finetuned on downstream tasks and achieves state-of-the-art performance. MLM plays an important role in self-supervised learning, and inspired MAE-ViT ([He et al., 2022](https://arxiv.org/abs/2111.06377)). Another important self-supervised learning task is contrastive learning, e.g., used by DINO ([Caron et al., 2021](https://arxiv.org/abs/2104.14294)). While the representation learned with MLM in general requires finetuning for downstream tasks, contrastive learning leads to better zero-shot, few-shot or in-context learning performance. But the simplicity and efficiency of MLM makes it as a compelling method for pretraining. 
+BERT takes the encoder of Transformer ([Vaswani et al., 2017](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)) pre-trained with masked language model task and next sentence prediction. It can be finetuned on downstream tasks and achieves state-of-the-art performance. MLM plays an important role in self-supervised learning, and inspired MAE-ViT ([He et al., 2022](https://arxiv.org/abs/2111.06377)). Another important self-supervised learning task is contrastive learning, e.g., used by DINO ([Caron et al., 2021](https://arxiv.org/abs/2104.14294)). While the representation learned with MLM in general requires finetuning for downstream tasks, contrastive learning leads to better zero-shot, few-shot or in-context learning performance. But the simplicity and efficiency of MLM makes it as a compelling method for pretraining.
 
 ## Problem
 
 The starting point of BERT is the limitation of left-to-right Transformers, such as GPT ([Radford et al., 2018]). Because first of all, limiting deep learning models is not a good practice, e.g., the invertibility of deep neural network in normalizing flows. Secondly, the left-to-right inductive bias doesn't fit all NLP tasks. Therefore, BERT removes the constraints and allow attention layers to compute attentions across all tokens within a sequence of tokens.
-
-> **Note:** Removing the constraints on attention layers will enable BERT to generalize well in other domains. So it will be reasonable to see the applications of BERT structure in other domains than GPT.
 
 ## Model
 
 BERT consists of embedding layers, Transformer blocks, and pre-training task heads, including MLM and NSP.
 
 ### Embedding layers
+
 The embedding layer handles three inputs
+
 * Ids of tokens, e.g., 1, 7, 8, ...;
 * Positions of tokens in a sequence with maximum length, e.g., 1,..., T;
 * Token types, either from the first sentence or the second sentence, e.g., 0,0,0,....,1,1.
 
 For each input, the embedding layer produces a vector as the embedding of which the hidden size is the same for all inputs,  and then sums up all the embedding as the input to the Transformer blocks.
+
 ``` python
 self.token_embeddings = nn.Embedding(vocab_size, hidden_size)
 self.position_embeddings = nn.Embedding(max_position_embeddings, hidden_size)
@@ -37,6 +38,7 @@ self.token_type_embeddings = nn.Embedding(type_vocab_size, hidden_size)
 ### Transformer blocks
 
 The Transformer blocks remove casual masks while take the attention masks. The attention mask indicating the padding tokens has the shape (B,T) for batch size B and sequence length T. Such masks are applied before softmax and often mask over key instead of query in attention computation. Moreover, an interesting implementation for multi-head attention is to initialize one matrix for all head and then reshape-reorder for attention score computation.
+
 ```python
 class MultiHeadSelfAttention(nn.Module):
     """Multi-head self-attention (bidirectional) with padding mask.
@@ -81,6 +83,7 @@ class MultiHeadSelfAttention(nn.Module):
         O_ = self.out(O.permute(0,2,1,3).reshape(B,T,D))
         return self.proj_drop(O_)
 ```
+
 ## Pre-training and Fine-tuning
 MLM and NSP are used for pre-training; however, NSP is shown to be less effective when scaling up by adding more data in a batch and more data ([Liu et al., 2019](https://arxiv.org/abs/1907.11692)). From this observation, it is interesting to see the behavior change when scaling up. Simple methods can work better.
 
@@ -114,7 +117,7 @@ Masked value prediction and removing the constraints on attention layers make th
 ## Further Reading
 
 * DINO, the other way of self-supervised learning for representation learning;
-* MAE-ViT, the application of MLM in images.
+* MAE-ViT, the application of MLM in images;
 * RoBERTa, scale up BERT with better practices.
 
 
