@@ -3,13 +3,13 @@ title: "BERT"
 date: 2026-01-22
 draft: false
 tags: ["foundation model", "language model"]
-description: "one sentence summary of my blog"
+description: "An effective Transformer-based method for pre-training and finetuning regime."
 ShowToc: true
 TocOpen: true
 ShowReadingTime: true
 math: true
 ---
-BERT is the encoder of Transformer ([Vaswani et al., 2017](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)) pre-trained with masked language model task and next sentence prediction. It can be finetuned on downstream tasks and achieves state-of-the-art performance. MLM plays an important role in self-supervised learning, and inspired MAE-ViT ([He et al., 2022](https://arxiv.org/abs/2111.06377)). Another important self-supervised learning task is contrastive learning, e.g., used by DINO ([Caron et al., 2021](https://arxiv.org/abs/2104.14294)). While the representation learned with MLM in general requires finetuning for downstream tasks, contrastive learning leads to better zero-shot, few-shot or in-context learning performance. But the simplicity and efficiency of MLM makes it as a compelling method for pretraining. 
+BERT takes the encoder of Transformer ([Vaswani et al., 2017](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)) pre-trained with masked language model task and next sentence prediction. It can be finetuned on downstream tasks and achieves state-of-the-art performance. MLM plays an important role in self-supervised learning, and inspired MAE-ViT ([He et al., 2022](https://arxiv.org/abs/2111.06377)). Another important self-supervised learning task is contrastive learning, e.g., used by DINO ([Caron et al., 2021](https://arxiv.org/abs/2104.14294)). While the representation learned with MLM in general requires finetuning for downstream tasks, contrastive learning leads to better zero-shot, few-shot or in-context learning performance. But the simplicity and efficiency of MLM makes it as a compelling method for pretraining. 
 
 ## Problem
 
@@ -107,12 +107,16 @@ Downstream task heads are added on top of the last layer and all parameters are 
   <em>Figure 2: Next sentence prediction task. Source: <a href="https://en.wikipedia.org/wiki/BERT_(language_model)">Wikipedia</a>.</em>
 </p>
 
-
-**Training recipes.**  
-
 ## Discussion
 
+Masked value prediction and removing the constraints on attention layers make the model assumptions hold for other domains, like image, tabular data, time-series data, as well. So regarding general self-supervised learning with finetuning for downstream tasks, it will be more reasonable to start from BERT structure than GPT structure.
+
 ## Further Reading
+
+* DINO, the other way of self-supervised learning for representation learning;
+* MAE-ViT, the application of MLM in images.
+* RoBERTa, scale up BERT with better practices.
+
 
 ## References
 
