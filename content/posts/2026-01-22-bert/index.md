@@ -101,21 +101,21 @@ Downstream task heads are added on top of the last layer and all parameters are 
 ## Training recipe
 
 > **Note:** The batch size of 256 is relatively small compared to modern standards (e.g., RoBERTa used 8k). The NSP task was later found to be less critical or even detrimental in subsequent studies like RoBERTa, which removed it and trained on more data for longer.
-
-| Pretraining aspect         |                                                                                                     |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Objective                  | **Masked Language Model (MLM)** + **Next Sentence Prediction (NSP)**                                                   |
-| Steps                      | **1,000,000 steps**                                                                                                    |
-| Hardware                   | **4 Cloud TPUs** (Base) or **16 Cloud TPUs** (Large)                                                                   |
-| Wall-clock time            | **4 days**                                                                                                             |
-| Batch size                 | **256 sequences** (256 × 512 tokens = 128,000 tokens/batch)                                                            |
-| Data used                  | **BooksCorpus** (800M words) and **English Wikipedia** (2,500M words)                                                  |
-| Optimizer                  | **Adam** (β1=0.9, β2=0.999, ε=1e-6)                                                                                    |
-| Learning rate schedule     | **Linear warm-up** over **10k steps**, then **linear decay**; Peak LR **1e-4**                                         |
-| Weight decay               | **0.01** (L2)                                                                                                          |
-| Regularization             | **Dropout** with probability **0.1**                                                                                   |
-| Activation                 | **GELU**                                                                                                               |
-
+| Pretraining aspect       | Details                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| Objective                | **Masked Language Model (MLM)** + **Next Sentence Prediction (NSP)**                        |
+| Steps                    | **1,000,000 steps**                                                                         |
+| Hardware                 | **4 Cloud TPUs** (Base) or **16 Cloud TPUs** (Large)                                        |
+| Wall-clock time          | **~4 days** (Base and Large)                                                                |
+| Batch size               | **256 sequences**                                                                           |
+| Sequence length schedule | **128 tokens for 90%** of steps (**900k**), then **512 tokens for 10%** of steps (**100k**) |
+| Tokens per batch         | **256×128 = 32,768** (first phase), **256×512 = 131,072** (second phase)                    |
+| Data used                | **BooksCorpus** (800M words) and **English Wikipedia** (2,500M words)                       |
+| Optimizer                | **Adam** (β1=0.9, β2=0.999, ε=1e-6)                                                         |
+| Learning rate schedule   | **Linear warm-up** over **10k steps**, then **linear decay**; Peak LR **1e-4**              |
+| Weight decay             | **0.01** (L2)                                                                               |
+| Regularization           | **Dropout** with probability **0.1**                                                        |
+| Activation               | **GELU**                                                                                    |
 
 ## Discussion
 
