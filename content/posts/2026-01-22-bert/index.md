@@ -101,6 +101,7 @@ Downstream task heads are added on top of the last layer and all parameters are 
 ## Training recipe
 
 > **Note:** The batch size of 256 is relatively small compared to modern standards (e.g., RoBERTa used 8k). The NSP task was later found to be less critical or even detrimental in subsequent studies like RoBERTa, which removed it and trained on more data for longer.
+
 | Pretraining aspect       | Details                                                                                     |
 | ------------------------ | ------------------------------------------------------------------------------------------- |
 | Objective                | **Masked Language Model (MLM)** + **Next Sentence Prediction (NSP)**                        |
