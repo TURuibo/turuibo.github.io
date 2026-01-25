@@ -1,35 +1,45 @@
 baseURL = "http://localhost:1313/"
 languageCode = "en-us"
-title = "Ruibo's Blog"
+title = "Ruibo's Library"
 theme = "PaperMod"
 
 [outputs]
 home = ["HTML", "RSS", "JSON"]
 
 [params]
+mainSections = ["posts", "articles", "devlogs"]
 ShowReadingTime = true
 ShowToc = true
 ShowCodeCopyButtons = true
 
 [params.homeInfoParams]
-Title = "Hi, I’m Ruibo"
-Content = "My learning notes. Let's learn together!"
+Title = "Read, Build, Think."
+Content = "R.B.T. in process, cheers!"
+
+[[menu.main]]
+name = "Articles"
+url = "/articles/"
+weight = 10
 
 [[menu.main]]
 name = "Posts"
 url = "/posts/"
-weight = 10
+weight = 20
+
+[[menu.main]]
+name = "Devlogs"
+url = "/devlogs/"
+weight = 30
 
 [[menu.main]]
 name = "Search"
 url = "/search/"
-weight = 20
+weight = 40
 
 [[menu.main]]
 name = "Tags"
 url = "/tags/"
-weight = 30
-
+weight = 50
 
 [caches]
   [caches.images]
