@@ -14,7 +14,7 @@ ShowCodeCopyButtons = true
 
 [params.homeInfoParams]
 Title = "Read, Build, Think."
-Content = "R.B.T. in process, cheers!"
+Content = "R.B.T. in progress ..."
 
 [[menu.main]]
 name = "Articles"
