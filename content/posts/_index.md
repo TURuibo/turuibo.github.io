@@ -1,4 +1,4 @@
 ---
 title: "Posts"
-description: "Short posts"
+description: "Short notes"
 ---
