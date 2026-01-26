@@ -10,7 +10,7 @@ ShowReadingTime: true
 math: true
 ---
 ## Overview
-A collection of vision-language models will be summarized, Flamigo, BLIP 1-3, ALBEF, CoCa, VisualGPT, CoCa, Qwen-VL, LlaVa.
+A collection of vision-language models.
 
 An aspects of vision-language models:
 ![Fig 1](figures/image.png)
