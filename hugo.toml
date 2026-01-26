@@ -7,7 +7,7 @@ theme = "PaperMod"
 home = ["HTML", "RSS", "JSON"]
 
 [params]
-mainSections = ["posts", "articles", "devlogs"]
+mainSections = ["posts", "topics", "devlogs"]
 ShowReadingTime = true
 ShowToc = true
 ShowCodeCopyButtons = true
@@ -17,8 +17,8 @@ Title = "Read, Build, Think."
 Content = "R.B.T. in progress ..."
 
 [[menu.main]]
-name = "Articles"
-url = "/articles/"
+name = "Topics"
+url = "/topics/"
 weight = 10
 
 [[menu.main]]
