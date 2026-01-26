@@ -1,7 +1,7 @@
 ---
-title: "Recent Research About Diffusion Models "
+title: "Recent Research in Diffusion Models "
 date: 2026-01-26
-draft: true
+draft: false
 tags: ["diffusion model", "language model", "vision model"]
 description: "Fun papers about diffusion models and applications."
 ShowToc: true

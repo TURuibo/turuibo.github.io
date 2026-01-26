@@ -1,7 +1,7 @@
 ---
 title: "Tabular Foundation Models "
 date: 2026-01-26
-draft: true
+draft: false
 tags: ["foundation model", "tabular", "time series"]
 description: "The next revolution with the new paradigm."
 ShowToc: true
