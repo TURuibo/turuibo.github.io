@@ -14,7 +14,21 @@ ShowCodeCopyButtons = true
 
 [params.homeInfoParams]
 Title = "Read, Build, Think."
-Content = "R.B.T. in progress ..."
+Content = "RBT on the way. Latest posts update in X."
+
+[[params.socialIcons]]
+name = "X"          # PaperMod’s icon name (works for X too)
+url  = "https://x.com/ruibo_ml"
+# optional:
+title = "Update latest posts on X"
+
+[[params.socialIcons]]
+name = "googlescholar"
+url  = "https://scholar.google.com/citations?user=auIx_r0AAAAJ&hl=en&oi=ao"
+
+[[params.socialIcons]]
+name = "github"
+url  = "https://github.com/TURuibo"
 
 [[menu.main]]
 name = "Topics"
