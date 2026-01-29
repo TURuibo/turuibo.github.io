@@ -1,5 +1,5 @@
 ---
-title: "Continual learning [on going post]"
+title: "Lessons and experiences of continual learning in deep learning for foundation models and LLMs"
 date: 2026-01-28
 draft: false
 tags: ["continual learning","deep learning","foundation models"]
@@ -41,15 +41,26 @@ Moreover, new data and tasks can be conflicting with the old ones that makes the
 
 Furthermore, how could we understand the current useful techniques in LLMs and foundation models, Mixture of Experts (MoEs ([Shazeer et al., 2017](https://arxiv.org/abs/1701.06538))), gating mechanisms (like in Qwen ([Qiu et al., 2025](https://arxiv.org/abs/2505.06708))), RL-based post-training, EMA (like in DINO), synthetic data as training data (in TabPFN ([Hollmann et al., 2023](https://arxiv.org/abs/2207.01848))).
 
-## Definition (vs other paradigms)
+## An imperfect definition as a starting point
 
-* Transfer Learning
-* Multi-task Learning
-* Online Learning
-* Few-shot Learning
-* Curriculum Learning
-* Active Learning
-* missing meta learning in-context learning
+> Suppose there are N tasks coming/streaming in sequence where $N \in \mathbb{Z}$, a model keeps learning for current task $i < N$ while not forgetting nor losing the capability for the past tasks for $t = 0,...,i-1$.
+
+First of all, this is a result-driven definition requiring the model to perform well on all tasks given a sequence of tasks. Secondly, the definition is heuristic, like learning, forgetting, and losing without clear technical definitions. In summary, the characteristics are 
+
+* sequential/streaming data and tasks;
+* the performanc should reasonably be good for all tasks, especially no forgetting for the past tasks.
+
+Given limited resources and capabilities of models, this doesn't make sense. For example, even for human, forgetting is common and sometimes better for learning. Especially, when new task conflicting with the past tasks and can generate new knowledge, maintaining the ability of past tasks doesn't make sense. So sometimes there should be an interaction between past and current task. In that case, instead of avoiding forgetting, the model needs to update knowledge with new data / tasks and solve new tasks based on old tasks. Therefore, there is no one for all definition of continual learning. And we should modify the definition according to the requirements of applications. 
+
+**Other learning regime.**
+
+* Transfer Learning / domain adaptation: often, there are two domains, source and target. And transfer learning aims at transferring the ability of deep learning models in th source domain to the target one. For example, finetuning for downstream tasks follows the regime.
+* Multi-task Learning: Given all tasks at the same time, a model is required to perform well on all the tasks, e.g., LLMs are in this category.
+* Online Learning: this is more like a optimization problem, when streaming data come sequentially, how to optimize the model on the fly.
+* Few-shot Learning, in-context learning: few-shot, zero-shot learning requires a model to be able to work on minimal data and leverage the model (often a pre-trained model) to get the best performance on the task. This requires minimal or no updates of the model. For example, CLIP can work well with zero-shot transfer.
+* Curriculum Learning: this emphasizes the learning/training process of deep learning models follows a well organized order of tasks, e.g., from simple to difficult, for a better training process.
+* Active Learning: this try to query data or labels on the fly for a better training performance, that queries the least and achieves the best. 
+* Meta learning: emphasizes make a model learn how to learn which can quickly adapt to new tasks, e.g., MAML (Finn et al., 2017) provides a better initialization and helps update model parameters towards different tasks with fewer training iterations.
 
 ## Evaluation
 
@@ -65,13 +76,16 @@ Furthermore, how could we understand the current useful techniques in LLMs and f
 
 There are mainly three categories for continual learning of deep learning methods before LLMs.
 
-**Architecture-based.**
+**Architecture-based.** 
+* static: this assumes fix model capacities like parameters. Updates of the parameters can be done by routing or gating, e.g. MoEs.
+* dynamical: dynamical growth of models for more new tasks.
 
-**Experience replay-based.**
+**Experience replay-based.** Two types of replay methods:
+* Sample-based: choose the most representative data for maintaincing the perofrmance of old tasks.
+* Generative model-based: use Generative models to generate data for replay while saving the storage of data.
 
-**Regularization-based.**
+**Regularization-based** methods try to limit or smartly decide (like updating according to the weight importances) changes of parameters or representation for new tasks and data. 
 
-**Relation to LLM.**
 
 ## Lessons from the past
 
@@ -91,6 +105,22 @@ Considering the knowledge as the representation and parameters of neural network
 
 **Memory and replay for LLMs continual learning.** Before LLMs get popular in machine learning, continual learning studies in deep learning faced the challenge of data privacy. The situation gets different in LLM studies and applications. For example, one can separate pre-trained LLMs from user data with RAG ([Lewis et al., 2020](https://arxiv.org/abs/2005.11401)). From this perspective, it is interesting to see how post-training and finetuning leverage memory, RAG, and replay for continual learning.
 
+**Relation to LLM.**
+
+These works may not necessary aim at continual learning and turns out helping improve the performance. 
+It is interesting to see that they could be interprete from continual learning perspectives. Well, not in this blog, perhaps in another block in this continual learning series.
+
+* Mixture of Experts (MoEs (Shazeer et al., 2017)), Gating mechanisms (like in Qwen (Qiu et al., 2025)): this can be a static architecture-based method. 
+* RL-based post-training: Uniquely different from the existed methods, this enlights a new category of methods.
+* EMA (like in DINO): this can be a regualarization-based method.
+* Synthetic data as training data (in TabPFN (Hollmann et al., 2023)): this can be a replay-based method.
+
+## Further reading:
+
+* Papers explain why RL post-training;
+* MoE;
+* Gating mechanism in Qwen.
+
 ## References
 
 * Qiu, Z., et al. (2025). [Gated Attention for Large Language Models: Non-linearity, Sparsity, and Attention-Sink-Free](https://arxiv.org/abs/2505.06708). *NeurIPS*.
@@ -100,5 +130,6 @@ Considering the knowledge as the representation and parameters of neural network
 * Caron, M., et al. (2021). [Emerging Properties in Self-Supervised Vision Transformers](https://arxiv.org/abs/2104.14294). *ICCV*.
 * Radford, A., et al. (2021). [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020). *ICML*.
 * Lewis, P., et al. (2020). [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401). *NeurIPS*.
+* Finn, C., et al. (2017). [Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks](https://proceedings.mlr.press/v70/finn17a.html). *ICML*.
 * Shazeer, N., et al. (2017). [Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer](https://arxiv.org/abs/1701.06538). *ICLR*.
 * Mnih, V., et al. (2013). [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/abs/1312.5602). *arXiv*.
