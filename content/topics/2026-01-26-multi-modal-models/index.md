@@ -10,11 +10,35 @@ ShowReadingTime: true
 math: true
 ---
 ## Overview
-A collection of vision-language models.
 
-An aspects of vision-language models:
-![Fig 1](figures/image.png)
- *source ([Kim, W., et al., 2021)](https://arxiv.org/pdf/2102.03334))*
+Vision-Language Models
+The models are focused in this post are the ones
+
+* image-text retrieval;
+* visual question answering;
+* visual reasoning;
+* visual entailment;
+* weakly-supervised grounding.
+
+Furthermore, this post focused on vision-language models with cross-attention for multi-modal modelling. The models are introduced following this order.
+1. ALBEF
+2. (CoCa)
+3. BLIP
+4. Flamingo
+5. (CLIP-ViT)
+
+**ALBEF.**
+This paper summarizes the related work in two categories regarding multi-modal modelling.
+
+1. joint vision-language encoders with cross-attention for complex reasoning;
+2. separate uni-modal encoders, like CLIP, for simple tasks like image-text retrieval.
+
+ALBEF proposes to combine both categories of models with Image-Text Contrastive learning (ITC), Masked Language Modelling (MLM) and Image-Text Matching (ITM) objectives. Moreover, it proposes to use two important approximations with queuing memory bank [citation memory bank] and soft labels. As a result, it can use 2xA100 GPUs for 30 epochs of batch size 512.
+
+As shown in Fig 1, the objectives are applied to both individual encoders before using cross-attention and to the final representation after using cross-attention.
+It worths to note that contrastive learning requires large number of negative samples, like a huge batch in CLIP. Using memory bank saves computes by re-using the outputs from previous calls of teacher models as the approximation of the outputs of the current student model. Moreover, to handle the noisy labelling of web data, a mix of soft labels from teacher models and labels by annotators are used for training.
+![Fig 1](figures/albef.png)
+ *source ([citation ALBEF])*
 
 
 ## References
