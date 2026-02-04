@@ -9,36 +9,126 @@ TocOpen: true
 ShowReadingTime: true
 math: true
 ---
+
 ## Overview
 
-Vision-Language Models
-The models are focused in this post are the ones
+This post contains vision-language models (VLMs) and evaluation of VLMs and focuses on models fusing vision and language modality with cross-attention. Models with fusing mechanisms are commonly:
+
+* dual encoders;
+* encoder-decoder.
+
+Common tasks of VLMs are:
 
 * image-text retrieval;
 * visual question answering;
 * visual reasoning;
+* captioning;
 * visual entailment;
 * weakly-supervised grounding.
 
-Furthermore, this post focused on vision-language models with cross-attention for multi-modal modelling. The models are introduced following this order.
-1. ALBEF
-2. (CoCa)
-3. BLIP
-4. Flamingo
-5. (CLIP-ViT)
+## Models
 
-**ALBEF.**
+### ALBEF ([Li et al., 2021](https://arxiv.org/abs/2107.07651))
 This paper summarizes the related work in two categories regarding multi-modal modelling.
 
 1. joint vision-language encoders with cross-attention for complex reasoning;
 2. separate uni-modal encoders, like CLIP, for simple tasks like image-text retrieval.
 
-ALBEF proposes to combine both categories of models with Image-Text Contrastive learning (ITC), Masked Language Modelling (MLM) and Image-Text Matching (ITM) objectives. Moreover, it proposes to use two important approximations with queuing memory bank [citation memory bank] and soft labels. As a result, it can use 8xA100 GPUs for 30 epochs of batch size 512.
+ALBEF proposes to combine both categories of models with Image-Text Contrastive learning (ITC), Masked Language Modelling (MLM) and Image-Text Matching (ITM) objectives. Moreover, it proposes to use two important approximations with queuing memory bank ([He et al., 2020](https://arxiv.org/abs/1911.05722)) and soft labels. As a result, it can use 8xA100 GPUs for 30 epochs of batch size 512.
 
 As shown in Fig 1, the objectives are applied to both individual encoders before using cross-attention and to the final representation after using cross-attention.
 It worths to note that contrastive learning requires large number of negative samples, like a huge batch in CLIP. Using memory bank saves computes by re-using the outputs from previous calls of teacher models as the approximation of the outputs of the current student model. Moreover, to handle the noisy labelling of web data, a mix of soft labels from teacher models and labels by annotators are used for training.
 ![Fig 1](figures/albef.png)
- *source ([citation ALBEF])*
+ *source ([Li et al., 2021](https://arxiv.org/abs/2107.07651))*
+
+Details: Memory bank, knowledge distillation
+
+### CoCa ([Yu et al., 2022](https://arxiv.org/abs/2205.01917))
+
+### Flamingo ([Alayrac et al., 2022](https://arxiv.org/abs/2204.14198))
+
+Flamingo transform pre-trained visual and language models into visual conditioned text generation model. It has three key highlighted modules: perceiver io for unifying video and image data; gated cross-attention for conditioning text generation on visual features with ordered masks and causal masks; enormous collected training data. It claims a few contributions:
+
+* sustainability: leverage pre-trained vision-only models and language only models (preserves the knowledge accumulated during pre-training: gated cross-attention);
+* flexibility: arbitrarily inter-leaved visual and textual data(rich interleaved web data + masked cross-attention computing with representing this type data properly)
+* compatability: ingests images or videos as inputs (perceiver resampler)
+
+A visual conditioned text generation model based on frozen encoders. Given a frozen-weight pre-trained visual encoder (NFNet) and a language model (Chinchillas), a perceiver resampler and cross attention layers are introduced by Flamingo as show in Fig. flamingo-1. Perceiver resampler unifies visual inputs, images and video data. It first takes the flattened visual features and outputs fixed length processed features. Moreover, between every two blocks, a gated cross-attention layer is introduced. The gating mechanism makes sure not change the language model outputs initially. Furthermore, to cooperate interleaved images and texts, the images are masked differently for computing cross-attention scores following a pre-defined rule.
+
+![Fig. flamingo-1](figures/flamingo1.png)
+*Fig. flamingo-1. Moduels of Flamingo model. Visual encoder, Perceiver resampler, gated cross-attention layers.*
+
+**Important details about modules: cross-attention layers.**
+To capture the position of images relative to texts, $\phi$ coding numbers are assigned for each token for their visible images when computing cross-attention scores.
+
+![Fig. flamingo-xattention](figures/flamingo_xattention.png)
+![Fig. flamingo-masks](figures/flamingo_masks.png)
+
+**Perceiver Resampler.**
+![Fig. flamingo-perceiver](figures/flamingo_perceiver.png)
+The learned latent queries extract information from input features which start from random tensors to representations as conditional signal to language models.
+
+
+
+**Paradigms: zero-shot, few-shot, and finetuning paradigms.**
+A famous zero-shot transfer model, CLIP, is good for closed-ended tasks, e.g., classification, but these models perform worse on open-ended tasks like VQA require more complex reasoning abilities. So further efforts on VLMs are in need. ([Radford et al., 2021](https://arxiv.org/abs/2103.00020))
+Flamingo compares finetuning with few-shots learning when few data are available. It states that finetuning still requires computation resources and per-task hyperparameter tuning, which is less ideal compared with few-shot learning. But few-shot learning requires computations during inference time and may achieve the upper limit of performance. Compared with zero-shot, few-shot learning can regularize the output formats by showing examples.
+
+**Perception IO**
+It is both an architecture significance but also the bottleneck on how much information can be effectively compressed by Perciever IO. ([Jaegle et al., 2021](https://arxiv.org/abs/2107.14795))
+
+**512 TPUs for a sustainable work are too expensive**
+A few more amazing facts:
+
+* it collects even larger datasets;
+* it retrains a few CLIP models
+
+Why Flamingo still requires a big number of TPUs?
+
+* Forward pass still needs all parameters in TPUs;
+* The training loss is over all datasets.
+  
+**Following up competing models.**
+
+- **2025**
+  - [Qwen2.5-VL](https://arxiv.org/abs/2502.13923)
+  - [InternVL3](https://arxiv.org/abs/2504.10479)
+  - [InternVL3.5](https://arxiv.org/abs/2508.18265)
+  - [Baichuan-Omni-1.5](https://arxiv.org/abs/2501.15368)
+  - [Kimi-VL](https://arxiv.org/abs/2504.07491)
+  - [Kwai Keye-VL](https://arxiv.org/abs/2507.01949)
+  - [REF-VLM](https://arxiv.org/abs/2503.07413)
+
+- **2024**
+  - [Chameleon](https://arxiv.org/abs/2405.09818)
+  - [PaLI-3](https://arxiv.org/abs/2310.09199)
+  - [Emu](https://arxiv.org/abs/2307.05222)
+  - [Emu2](https://arxiv.org/abs/2312.13286)
+  - [Qwen2-VL](https://arxiv.org/abs/2409.12191)
+  - [Cambrian-1](https://arxiv.org/abs/2406.16860)
+  - [Pixtral 12B](https://arxiv.org/abs/2410.07073)
+  - [Aria](https://arxiv.org/abs/2410.05993)
+
+- **2023 (still commonly listed as “post-Flamingo” baselines)**
+  - [PaLM-E](https://arxiv.org/abs/2303.03378)
+  - [PaLI-X](https://arxiv.org/abs/2305.18565)
+  - [BLIP-2](https://arxiv.org/abs/2301.12597)
+  - [InstructBLIP](https://arxiv.org/abs/2305.06500)
+  - [Qwen-VL](https://arxiv.org/abs/2308.12966)
+  - [LLaVA-1.5](https://arxiv.org/abs/2310.03744)
+  - [IDEFICS](https://arxiv.org/abs/2306.16527)
+  - [Kosmos-2](https://arxiv.org/abs/2306.14824)
+
+### CLIP-CLAP
+
+### BLIP
+
+### CLIP-ViT
+
+## Evaluation: tasks, datasets, performance
+
+tasks: VQA, captioning, multiple-choice VQA
+type: zero-shot, few-shot
 
 
 ## References
@@ -53,3 +143,6 @@ It worths to note that contrastive learning requires large number of negative sa
 * Bai, J., et al. (2023). [Qwen-VL: A Versatile Vision-Language Model for Understanding, Localization, Text Reading, and Beyond](https://arxiv.org/abs/2308.12966). *arXiv*.
 * Liu, H., et al. (2023). [Visual Instruction Tuning](https://arxiv.org/abs/2304.08485). *arXiv*.
 * Kim, W., et al. (2021). [ViLT: Vision-and-Language Transformer Without Convolution or Region Supervision](https://arxiv.org/abs/2102.03334). *ICML*.
+* Radford, A., et al. (2021). [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020). *ICML*.
+* Jaegle, A., et al. (2021). [Perceiver IO: A General Architecture for Structured Inputs & Outputs](https://arxiv.org/abs/2107.14795). *ICML*.
+* He, K., et al. (2020). [Momentum Contrast for Unsupervised Visual Representation Learning](https://arxiv.org/abs/1911.05722). *CVPR*.
