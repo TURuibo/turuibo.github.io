@@ -14,8 +14,12 @@ math: true
 
 This post takes a look at vision-language models (VLMs) and their evaluation and focuses on models fusing vision and language modality with cross-attention. Models with fusing mechanisms are commonly:
 
-* dual encoders;
-* encoder-decoder.
+* Dual-encoder: CLIP (also ALIGN, etc.)
+* Fusion-encoder (cross-encoder / hybrid): ALBEF (also UNITER/ViLT-style)
+* Encoder–decoder: models that explicitly encode vision then decode text (SimVLM-style; OFA is often framed as unified seq2seq)
+* Unified transformer: BLIP, OFA-style
+* Multimodal LLM with cross-attention adapters: Flamingo
+* Hybrid dual-encoder + captioner: CoCa
 
 Common tasks of VLMs are:
 
@@ -141,10 +145,18 @@ The Q-Former takes learned queries and query texts as input and provides represe
 The two-stage manner turns a BERT into an alignment model to fill in the gap step by step. The first stage contains three objectives: image-text contrastive learning (similar as CLIP, given an image, find the winning text against the rest texts); image-text matching (whether it is a paired image-text or not); image-grounded text generation (captioning). The captioning task is not so BERT, but the purpose at this stage is not to get a perfect captioning model, instead to get a good enough visual information extractor. The text and the objectives are supporting to have a better representation from learned queries. Then the second stage takes the linear transformed representation as prepended embeddings of text embeddings and further finetune the Q-Former.
 
 ### BLIP
+https://arxiv.org/pdf/2201.12086
 
-### CLIP-CLAP
+### Instruct BLIP
+https://arxiv.org/pdf/2305.06500
 
-### CLIP-ViT
+## Non-fusion models
+
+### ClipCap
+
+### SimVLM 
+
+(Simple Visual Language Model; Wang et al. 2022) is a simple prefix language model, where the prefix sequence is processed with bi-directional attention like BERT, but the main input sequence only has causal attention like GPT.
 
 ## Evaluation: tasks, datasets, performance
 
