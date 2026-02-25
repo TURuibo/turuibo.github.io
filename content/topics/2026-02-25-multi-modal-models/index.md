@@ -1,6 +1,6 @@
 ---
 title: "Multi-Modal Vision Language Models"
-date: 2026-01-26
+date: 2026-02-25
 draft: false
 tags: ["foundation model", "multi-modality","vision language model","VQA","vision language reasoning", "video QA"]
 description: "Read vision language models for handling multi-modality."
