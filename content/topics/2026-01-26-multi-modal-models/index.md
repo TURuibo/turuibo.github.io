@@ -1,7 +1,7 @@
 ---
 title: "Multi-Modal Vision Language Models"
 date: 2026-01-26
-draft: true
+draft: false
 tags: ["foundation model", "multi-modality","vision language model","VQA","vision language reasoning", "video QA"]
 description: "Read vision language models for handling multi-modality."
 ShowToc: true
@@ -12,23 +12,16 @@ math: true
 
 ## Overview
 
-This post takes a look at vision-language models (VLMs) and their evaluation and focuses on models fusing vision and language modality with cross-attention. Models with fusing mechanisms are commonly:
+This post takes a look at vision-language models (VLMs). Common VLM tasks are image-text retrieval, visual question answering (VQA), visual reasoning, captioning, visual entailment. weakly-supervised grounding.
 
-* Dual-encoder: CLIP (also ALIGN, etc.)
-* Fusion-encoder (cross-encoder / hybrid): ALBEF (also UNITER/ViLT-style)
-* Encoder–decoder: models that explicitly encode vision then decode text (SimVLM-style; OFA is often framed as unified seq2seq)
-* Unified transformer: BLIP, OFA-style
-* Multimodal LLM with cross-attention adapters: Flamingo
-* Hybrid dual-encoder + captioner: CoCa
+This post looks for models understanding images and interacting with languages and focuses on models fusing vision language modalities with cross-attention. Models with fusing mechanisms are commonly:
 
-Common tasks of VLMs are:
+* Dual-encoder: CLIP;
+* Encoder–decoder: models that explicitly encode vision then decode text, SimVLM;
+* Hybrid dual-encoder and encoder-decoder: ALBEF, CoCa;
+* Unified transformer: BLIP;
+* Multi-modal LLM with cross-attention adapters: Flamingo.
 
-* image-text retrieval;
-* visual question answering;
-* visual reasoning;
-* captioning;
-* visual entailment;
-* weakly-supervised grounding.
 
 ## Models
 
@@ -42,12 +35,30 @@ ALBEF proposes to combine both categories of models with Image-Text Contrastive 
 
 As shown in Fig 1, the objectives are applied to both individual encoders before using cross-attention and to the final representation after using cross-attention.
 It worths to note that contrastive learning requires large number of negative samples, like a huge batch in CLIP. Using memory bank saves computes by re-using the outputs from previous calls of teacher models as the approximation of the outputs of the current student model. Moreover, to handle the noisy labelling of web data, a mix of soft labels from teacher models and labels by annotators are used for training.
-![Fig 1](figures/albef.png)
+![Fig ALBEF](figures/albef.png)
  *source ([Li et al., 2021](https://arxiv.org/abs/2107.07651))*
 
 Details: Memory bank, knowledge distillation
 
 ### CoCa ([Yu et al., 2022](https://arxiv.org/abs/2205.01917))
+The work has a different opinion from CLIP about captioning for representation learning. It argues that captioning can help improve performance on complicated reasoning tasks like VQA compared with image text retrieval. The key idea is to design a Transformer-based architecture for both contrastive loss (like CLIP) and captioning loss. The first part of the text decoder doesn't use cross-attention so it is a uni-modal text encoder for the contrastive loss with image encoder. The second part of the text decoder applies cross-attention and captioning loss. One benefits of the architecture is that one forward pass can be used for computing both loss.
+
+![Fig Coca](figures/coca.png)
+ *source ([Yu et al., 2022](https://arxiv.org/abs/2205.01917))*
+
+One trick in CoCa is to use attention pooler to extract image features from image encoder. Depending on tasks, the pooler can be modified for regional information or global information.
+
+### BLIP ([Li et al., 2022](https://arxiv.org/pdf/2201.12086))
+
+The first BLIP model is similar as CoCa which modifies the Transformer architecture for applying multiple losses. Different from CoCa, BLIP requires three runs of the text encoder-decoder. There are three tasks, image-text contrastive, image-text matching, and image-grounded text generation. Different tasks use different modules of the model.
+
+![Fig. BLIP-1](figures/blip.png)
+*Fig. BLIP-1: three losses for different modules of the same Transformer-based architecture. Three forward runs for text encoder-decoder, and one run for image encoder. One backward run is applied for updating parameters.*
+
+Moreover, BLIP introduces an interesting learning strategy with the model, CapFilt. It first learns a model based on the raw dataset. And they finetune the pre-trained model for different tasks, captioning with the captioning loss and filtering with the ITC and ITM losses on dataset CoCo. And then apply the finetuned models to get a better dataset than the raw dataset.
+
+![Fig. BLIP-1](figures/blip_capfilt.png)
+*Fig. BLIP-CapFilt: One loop is used for BLIP. It first learns a pre-trained model on the raw dataset, and then finetunes two models on CoCo for captioning and filtering. Then the finetuned models are used for getting a better dataset. Finally, the pre-trained model is updated with the new dataset or a new model is trained on the new dataset.*
 
 ### Flamingo ([Alayrac et al., 2022](https://arxiv.org/abs/2204.14198))
 
@@ -89,8 +100,31 @@ Why Flamingo still requires a big number of TPUs?
 
 * Forward pass still needs all parameters in TPUs;
 * The training loss is over all datasets.
-  
-**Following up competing models.**
+
+### BLIP-2 ([Li et al., 2023](https://arxiv.org/abs/2301.12597))
+
+**A continual learning view of VLMs.** A scenario of VLMs is that given a working LLM, we want to empower it with visual reasoning capabilities. One way is to train from scratch by considering image patch tokens and text tokens at the same level, which is expensive and requires changes of training processes. Another way is to extend the capability of LLMs and make them "continual learning" on visual tasks. Following the later idea, one continual learning methodology is architecture-based. We don't want the limited capability of existing models lead to catastrophic forgetting; hence, augmenting existing LLMs is in need. Flamingo applied visual encoders with Perceiver resampler extracting relevant visual information and added gated cross-attention layers in-between LLMs. BLIP 2 claimed that this is an expensive way. BLIP 2 uses a similar representation learning trick with transformers as Perceiver resampler, that takes texts and images as input and provides representation including both information. Such representation is transformed and used as a prepended embedding of LLMs for generating answers.
+
+**A conditional generation view of VLMs.** Given an image encoder and a LLM, the image encoder provides features as conditional signals for the LLM such that the LLM can provide answers for the given query about the image. Flamingo filled in the gap by cross-attention layers and transformer-based visual representation learning. Moreover, different from previous dual-encoder, encoder-decoder methods in fusing VLMs, BLIP-2 proposes a stand-alone transformer for bridging the visual and language model gaps. The same as Flamingo, image encoders provide visual features and LLMs provide final answers.
+![Fig. blip2](figures/blip2.png)
+*Fig.blip2. BLIP-2 uses Q-Former to fill in the gap between visual and language pre-trained models. **This figure is not the same for using BLIP 2 which takes text input by the LLM not by Q-Former**.*
+
+**Sustainability.** BLIP-2 motivated in the following way. Pre-training models have high computational cost. Especially for VLMs, reusing out-of-the-shelf pre-trained models while freezing parameters is a compelling way but challenging. Because language and image encoders are trained separately. Their embedding spaces are disconnected. Similar concepts in the language embedding space are not necessary similar in the visual space. Therefore, augmenting the embedding space and model capabilities is still an open question.
+
+**Q-Former.**
+![Fig. blip2_qformer](figures/blip2_qformer.png)
+*Fig.blip2_qformer. The 1st stage of Q-Former based on a pre-trained BERT.*
+![Fig. blip2_qformer](figures/blip2_qformer.png)
+*Fig.blip2_qformer. The 2nd stage of Q-Former.*
+
+The Q-Former takes learned queries and query texts as input and provides representation based on learned queries for LLMs. It is based on a pre-trained BERT and uses cross-attention layers to extract visual information from visual encoder features. Moreover, different masks are used for computing the objectives of training the stage-1 Q-Former.
+
+**Two-stage training.**
+The two-stage manner turns a BERT into an alignment model to fill in the gap step by step. The first stage contains three objectives: image-text contrastive learning (similar as CLIP, given an image, find the winning text against the rest texts); image-text matching (whether it is a paired image-text or not); image-grounded text generation (captioning). The captioning task is not so BERT, but the purpose at this stage is not to get a perfect captioning model, instead to get a good enough visual information extractor. The text and the objectives are supporting to have a better representation from learned queries. Then the second stage takes the linear transformed representation as prepended embeddings of text embeddings and further finetune the Q-Former.
+
+## Following up competing models
+
+Let's have a series called the big worlds for the flagship models, like BLIP, QwenVL, InternVL, Kimi-VL, LlaVa, PaLI.
 
 - **2025**
   - [Qwen2.5-VL](https://arxiv.org/abs/2502.13923)
@@ -121,48 +155,6 @@ Why Flamingo still requires a big number of TPUs?
   - [IDEFICS](https://arxiv.org/abs/2306.16527)
   - [Kosmos-2](https://arxiv.org/abs/2306.14824)
 
-Let's have a series called the crazy big worlds for the flagship models, like BLIP, QwenVL, InternVL, Kimi-VL, LlaVa, PaLI.
-
-### BLIP-2 ([Li et al., 2023](https://arxiv.org/abs/2301.12597))
-
-**A continual learning view of VLMs.** A scenario of VLMs is that given a working LLM, we want to empower it with visual reasoning capabilities. One way is to train from scratch by considering image patch tokens and text tokens at the same level, which is expensive and requires changes of training processes. Another way is to extend the capability of LLMs and make them "continual learning" on visual tasks. Following the later idea, one continual learning methodology is architecture-based. We don't want the limited capability of existing models lead to catastrophic forgetting; hence, augmenting existing LLMs is in need. Flamingo applied visual encoders with Perceiver resampler extracting relevant visual information and added gated cross-attention layers in-between LLMs. BLIP 2 claimed that this is an expensive way. BLIP 2 uses a similar representation learning trick with transformers as Perceiver resampler, that takes texts and images as input and provides representation including both information. Such representation is transformed and used as a prepended embedding of LLMs for generating answers.
-
-**A conditional generation view of VLMs.** Given an image encoder and a LLM, the image encoder provides features as conditional signals for the LLM such that the LLM can provide answers for the given query about the image. Flamingo filled in the gap by cross-attention layers and transformer-based visual representation learning. Moreover, different from previous dual-encoder, encoder-decoder methods in fusing VLMs, BLIP-2 proposes a stand-alone transformer for bridging the visual and language model gaps. The same as Flamingo, image encoders provide visual features and LLMs provide final answers.
-![Fig. blip2](figures/blip2.png)
-*Fig.blip2. BLIP-2 uses Q-Former to fill in the gap between visual and language pre-trained models. **This figure is not the same for using BLIP 2 which takes text input by the LLM not by Q-Former**.*
-
-**Sustainability.** BLIP-2 motivated in the following way. Pre-training models have high computational cost. Especially for VLMs, reusing out-of-the-shelf pre-trained models while freezing parameters is a compelling way but challenging. Because language and image encoders are trained separately. Their embedding spaces are disconnected. Similar concepts in the language embedding space are not necessary similar in the visual space. Therefore, augmenting the embedding space and model capabilities is still an open question.
-
-**Q-Former.**
-![Fig. blip2_qformer](figures/blip2_qformer.png)
-*Fig.blip2_qformer. The 1st stage of Q-Former based on a pre-trained BERT.*
-![Fig. blip2_qformer](figures/blip2_qformer.png)
-*Fig.blip2_qformer. The 2nd stage of Q-Former.*
-
-The Q-Former takes learned queries and query texts as input and provides representation based on learned queries for LLMs. It is based on a pre-trained BERT and uses cross-attention layers to extract visual information from visual encoder features. Moreover, different masks are used for computing the objectives of training the stage-1 Q-Former.
-
-**Two-stage training.**
-The two-stage manner turns a BERT into an alignment model to fill in the gap step by step. The first stage contains three objectives: image-text contrastive learning (similar as CLIP, given an image, find the winning text against the rest texts); image-text matching (whether it is a paired image-text or not); image-grounded text generation (captioning). The captioning task is not so BERT, but the purpose at this stage is not to get a perfect captioning model, instead to get a good enough visual information extractor. The text and the objectives are supporting to have a better representation from learned queries. Then the second stage takes the linear transformed representation as prepended embeddings of text embeddings and further finetune the Q-Former.
-
-### BLIP
-https://arxiv.org/pdf/2201.12086
-
-### Instruct BLIP
-https://arxiv.org/pdf/2305.06500
-
-## Non-fusion models
-
-### ClipCap
-
-### SimVLM 
-
-(Simple Visual Language Model; Wang et al. 2022) is a simple prefix language model, where the prefix sequence is processed with bi-directional attention like BERT, but the main input sequence only has causal attention like GPT.
-
-## Evaluation: tasks, datasets, performance
-
-tasks: VQA, captioning, multiple-choice VQA
-type: zero-shot, few-shot
-
 
 ## References
 * Yu, J., Wang, Z., Vasudevan, V., Yeung, L., Seyedhosseini, M., & Wu, Y. (2022). [CoCa: Contrastive Captioners are Image-Text Foundation Models](https://arxiv.org/abs/2205.01917). *arXiv*. 
@@ -171,6 +163,7 @@ type: zero-shot, few-shot
 * Chen, J., et al. (2022). [VisualGPT: Data-Efficient Adaptation of Pretrained Language Models for Image Captioning](https://openaccess.thecvf.com/content/CVPR2022/html/Chen_VisualGPT_Data-Efficient_Adaptation_of_Pretrained_Language_Models_for_Image_Captioning_CVPR_2022_paper.html). *CVPR*.
 * Li, J., et al. (2022). [BLIP: Bootstrapping Language-Image Pre-training for Unified Vision-Language Understanding and Generation](https://arxiv.org/abs/2201.12086). *arXiv*.
 * Li, J., et al. (2023). [BLIP-2: Bootstrapping Language-Image Pre-training with Frozen Image Encoders and Large Language Models](https://arxiv.org/abs/2301.12597). *arXiv*.
+* Dai, W., et al. (2023). [InstructBLIP: Towards General-purpose Vision-Language Models with Instruction Tuning](https://arxiv.org/abs/2305.06500). *NeurIPS*.
 * Xue, L., et al. (2024). [xGen-MM (BLIP-3): A Family of Open Large Multimodal Models](https://arxiv.org/abs/2408.08872). *arXiv*.
 * Yu, J., et al. (2022). [CoCa: Contrastive Captioners are Image-Text Foundation Models](https://arxiv.org/abs/2205.01917). *arXiv*.
 * Bai, J., et al. (2023). [Qwen-VL: A Versatile Vision-Language Model for Understanding, Localization, Text Reading, and Beyond](https://arxiv.org/abs/2308.12966). *arXiv*.
